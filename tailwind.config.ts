@@ -12,6 +12,7 @@ const config: Config = {
         primary: '#2C2C2C',
         secondary: '#F5F5F5',
         blue: '#5E17EB',
+        yellow: '#ffba0f',
         footer: '#72808A'
       },
       textColor: {

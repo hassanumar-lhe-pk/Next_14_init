@@ -4,13 +4,19 @@ import Image from "next/legacy/image";
 import Button from "./components/shared/button";
 import TextInput from "./components/shared/Input";
 import { LoginData } from "./types/types";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { validateLoginFields } from "./utils/helper";
 import Modal from "./components/shared/modal";
+import { useRouter } from "next/navigation";
+import { loginImg } from "./utils/images";
 
 export default function Home() {
-  // Image URL
-  const loginImg = `${process.env.NEXT_PUBLIC_IMAGE_URL}/login.png`;
+  // create a router
+  const router = useRouter();
+  // Prefetching the dashboard routes
+  useEffect(() => {
+    router.prefetch("/dashboard");
+  }, [router]);
 
   // Modal States
   const [showModal, setShowModal] = useState(false);
@@ -56,16 +62,19 @@ export default function Home() {
       setShowModal(true);
       return setIsLoading(false);
     } else {
-      // remove after Api integration
-      return setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      const user = {
+        role: "admin",
+      };
+      localStorage.setItem("user", JSON.stringify(user));
+      router.push("dashboard");
+
+      setIsLoading(false);
     }
   };
 
   return (
     <main className="min-h-screen min-w-full flex flex-col items-center justify-center">
-      <div className="flex flex-col w-2/5 gap-5">
+      <div className="flex flex-col w-2/5">
         <Image
           src={loginImg}
           alt="logo"
@@ -73,26 +82,28 @@ export default function Home() {
           height={150}
           objectFit="contain"
         />
-        <TextInput
-          title="Email"
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          value={loginData?.email}
-          handleOnChange={loginDataOnChange}
-          isError={!_?.isEmpty(errorMsgData?.email)}
-          errorMsg={errorMsgData?.email}
-        />
-        <TextInput
-          title="Password"
-          type="password"
-          name="password"
-          placeholder="Enter your password"
-          value={loginData?.password}
-          handleOnChange={loginDataOnChange}
-          isError={!_?.isEmpty(errorMsgData?.password)}
-          errorMsg={errorMsgData?.password}
-        />
+        <div className="flex flex-col w-96 self-center my-5 gap-3">
+          <TextInput
+            title="Email"
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={loginData?.email}
+            handleOnChange={loginDataOnChange}
+            isError={!_?.isEmpty(errorMsgData?.email)}
+            errorMsg={errorMsgData?.email}
+          />
+          <TextInput
+            title="Password"
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={loginData?.password}
+            handleOnChange={loginDataOnChange}
+            isError={!_?.isEmpty(errorMsgData?.password)}
+            errorMsg={errorMsgData?.password}
+          />
+        </div>
         <Button
           className="w-48 h-12 self-center"
           text="Log in"
